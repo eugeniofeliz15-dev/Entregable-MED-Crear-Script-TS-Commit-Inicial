@@ -37,7 +37,7 @@ const listTasks = (arregloDeTareas: Task[] = tareas) => {
         return `[${id}] ${title} - ${estado}`; 
     });
 
-  
+
     tareasFormateadas.forEach((textoTarea) => {
         console.log(textoTarea);
     });
@@ -74,7 +74,7 @@ const filterPending = () => {
 };
 
 const filterCompleted = () => {
-   
+
     return tareas.filter((task) => task.completed === true);
 };
 
