@@ -13,51 +13,84 @@ let tareas: Task[] = [];
 let idCounter: number = 1;
 
 const addTask = (title: string) => {
-    let nuevaTarea: Task = {
+    const nuevaTarea: Task = {
         id: idCounter,
         title: title,
         completed: false
     };
     tareas.push(nuevaTarea);
     idCounter++;
-    console.log("¡Tarea agregada!: " + title);
+    console.log(`¡Tarea agregada!: ${title}`);
 };
 
-const listTasks = () => {
-    if (tareas.length === 0) {
+// Modifiqué listTasks para que reciba un arreglo de tareas. 
+// Por defecto, si no le pasamos nada, usa el arreglo global 'tareas'.
+const listTasks = (arregloDeTareas: Task[] = tareas) => {
+    if (arregloDeTareas.length === 0) {
         console.log("La lista está vacía.");
-    } else {
-        for (let i = 0; i < tareas.length; i++) {
-            let estado = "";
-            if (tareas[i].completed === true) {
-                estado = "completed";
-            } else {
-                estado = "pending";
-            }
-            console.log("[" + tareas[i].id + "] " + tareas[i].title + " - " + estado);
-        }
+        return; // Salimos de la función temprano
     }
+
+    // 1. .map() y Desestructuración
+    const tareasFormateadas = arregloDeTareas.map((task) => {
+        const { id, title, completed } = task; // Desestructuración
+        const estado = completed ? "completed" : "pending";
+        return `[${id}] ${title} - ${estado}`; // Retornamos el string ya listo
+    });
+
+    // 2. .forEach() para imprimir
+    tareasFormateadas.forEach((textoTarea) => {
+        console.log(textoTarea);
+    });
 };
 
 const removeTask = () => {
     if (tareas.length > 0) {
-        let tareaEliminada = tareas.pop();
+        const tareaEliminada = tareas.pop();
         if (tareaEliminada) {
-            console.log("Se eliminó con éxito la tarea: " + tareaEliminada.title);
+            console.log(`Se eliminó con éxito la tarea: ${tareaEliminada.title}`);
         }
     } else {
         console.log("La lista está vacía.");
     }
 };
+
+// --- NUEVAS FUNCIONES ---
+
+const markCompleted = (id: number) => {
+    // Usamos .find() para localizar la tarea
+    const tareaEncontrada = tareas.find((task) => task.id === id);
+    
+    if (tareaEncontrada) {
+        tareaEncontrada.completed = true;
+        console.log(`¡Listo! La tarea con ID ${id} fue marcada como completada.`);
+    } else {
+        console.log(`No se encontró ninguna tarea con el ID ${id}.`);
+    }
+};
+
+const filterPending = () => {
+    // Usamos .filter() para retornar las que tienen completed: false
+    return tareas.filter((task) => task.completed === false);
+};
+
+const filterCompleted = () => {
+    // Usamos .filter() para retornar las que tienen completed: true
+    return tareas.filter((task) => task.completed === true);
+};
+
 
 let menuActivo = true;
 
 while (menuActivo) {
     console.log("\n========== MENÚ DE TAREAS ==========");
     console.log("1. Agregar tarea");
-    console.log("2. Listar tareas");
+    console.log("2. Listar todas las tareas");
     console.log("3. Eliminar última tarea");
-    console.log("4. Salir");
+    console.log("4. Marcar tarea como completada"); // Nueva opción
+    console.log("5. Ver solo tareas pendientes");     // Nueva opción
+    console.log("6. Ver solo tareas completadas");    // Nueva opción
+    console.log("7. Salir");
     console.log("====================================");
     
     let opcion = await rl.question("Elige una opción: ");
@@ -65,77 +98,36 @@ while (menuActivo) {
     if (opcion === "1") {
         let title = await rl.question("Escribe el nombre de la nueva tarea: ");
         addTask(title);
+        
     } else if (opcion === "2") {
-        console.log("\n--- Lista de Tareas ---");
-        listTasks();
+        console.log("\n--- Lista de Todas las Tareas ---");
+        listTasks(); // Al no pasar argumentos, usa 'tareas'
+        
     } else if (opcion === "3") {
         console.log("\n--- Eliminando tarea ---");
         removeTask();
+        
     } else if (opcion === "4") {
+        let idIngresado = await rl.question("Escribe el ID de la tarea a completar: ");
+        // Convierte el texto que escribe el usuario a número (Number)
+        markCompleted(Number(idIngresado));
+        
+    } else if (opcion === "5") {
+        console.log("\n--- Tareas Pendientes ---");
+        const tareasPendientes = filterPending();
+        listTasks(tareasPendientes); // Reutilizamos listTasks pasándole el filtro
+        
+    } else if (opcion === "6") {
+        console.log("\n--- Tareas Completadas ---");
+        const tareasCompletadas = filterCompleted();
+        listTasks(tareasCompletadas); // Reutilizamos listTasks pasándole el filtro
+        
+    } else if (opcion === "7") {
         console.log("Saliendo del programa...");
         menuActivo = false;
+        rl.close(); // Cerramos readline para que el proceso no se quede colgado
+        
     } else {
         console.log("Opción no válida. Intenta de nuevo.");
     }
 }
-
-=======
-const answer = await rl.question("¿Cuál es tu nombre? ");
-console.log(`Hola, ${answer}!`);
-
-let systemName = await rl.question("Ingresa el nombre del sistema: ");
-console.log(systemName);
-
-let versionInput = await rl.question("Ingresa la versión del sistema (ej. 2.14): ");
-let version: number = parseFloat(versionInput);
-console.log(version);
-
-let userName = await rl.question("Ingresa el nombre de usuario: ");
-console.log(userName);
-
-let Sueldo = await rl.question("Ingresa el tipo de pago (ej. Sueldo por dia): ");
-console.log(Sueldo);
-
-let horasInput = await rl.question("¿Cuántas horas trabajaste? ");
-let horasTrabajadas: number = parseInt(horasInput);
-
-let sueldoHoraInput = await rl.question("¿Cuál es tu sueldo por hora? ");
-let sueldoPorHora: number = parseFloat(sueldoHoraInput);
-
-console.log("El sueldo total es: " + (horasTrabajadas * sueldoPorHora));
-
-let tareas: string[] = [
-    "Configurar el entorno de desarrollo",
-    "Repasar las bases de TypeScript",
-    "Crear mi primer proyecto"
-];
-
-console.log("\n========== SIMULACIÓN DE MENÚ ==========\n");
-
-console.log("--- Lista Inicial de Tareas ---");
-for (let i = 0; i < tareas.length; i++) {
-    console.log((i + 1) + ". " + tareas[i]);
-}
-
-console.log("\n--- Agregando una nueva tarea ---");
-let nuevaTarea = await rl.question("Escribe la nueva tarea que quieres agregar: ");
-tareas.push(nuevaTarea); 
-console.log("¡Tarea agregada!: " + nuevaTarea);
-
-console.log("\n--- Eliminando la última tarea ---");
-if (tareas.length > 0) {
-    let tareaEliminada = tareas.pop(); 
-    console.log("Se eliminó con éxito la tarea: " + tareaEliminada);
-} else {
-    console.log("La lista está vacía.");
-}
-
-console.log("\n--- Lista Final de Tareas ---");
-for (let i = 0; i < tareas.length; i++) {
-    console.log((i + 1) + ". " + tareas[i]);
-}
-
-console.log("========================================");
-console.log("Programa terminado.");
-
-rl.close();
