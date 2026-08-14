@@ -128,6 +128,5 @@ while (menuActivo) {
         rl.close(); // Cerramos readline para que el proceso no se quede colgado
         
     } else {
-        console.log("Opción no válida. Intenta de nuevo.");
+        console.log("Opción no válida. Intenta de nuevo.");}
     }
-}
