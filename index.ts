@@ -27,7 +27,7 @@ const addTask = (title: string) => {
 const listTasks = (arregloDeTareas: Task[] = tareas) => {
     if (arregloDeTareas.length === 0) {
         console.log("La lista está vacía.");
-        return; // Salimos de la función temprano
+        return; 
     }
 
     
@@ -37,7 +37,7 @@ const listTasks = (arregloDeTareas: Task[] = tareas) => {
         return `[${id}] ${title} - ${estado}`; 
     });
 
-    
+
     tareasFormateadas.forEach((textoTarea) => {
         console.log(textoTarea);
     });
@@ -74,7 +74,7 @@ const filterPending = () => {
 };
 
 const filterCompleted = () => {
-    
+
     return tareas.filter((task) => task.completed === true);
 };
 
@@ -124,9 +124,8 @@ while (menuActivo) {
     } else if (opcion === "7") {
         console.log("Saliendo del programa...");
         menuActivo = false;
-        rl.close(); 
+        rl.close();
         
     } else {
-        console.log("Opción no válida. Intenta de nuevo.");
+        console.log("Opción no válida. Intenta de nuevo.");}
     }
-}
