@@ -12,15 +12,36 @@ interface Task {
 let tareas: Task[] = [];
 let idCounter: number = 1;
 
-const addTask = (title: string) => {
-    const nuevaTarea: Task = {
-        id: idCounter,
-        title: title,
-        completed: false
-    };
-    tareas.push(nuevaTarea);
-    idCounter++;
-    console.log(`¡Tarea agregada!: ${title}`);
+const saveToDB = (tarea: Task): Promise<void> => {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            console.log(`\n[Servidor] Confirmación: La tarea '${tarea.title}' fue guardada en la base de datos.`);
+            resolve();
+        }, 2000); 
+    });
+};
+
+const addTask = async (title: string) => {
+    try {
+        if (title.trim() === "") {
+            throw new Error("El título de la tarea no puede estar vacío.");
+        }
+
+        const nuevaTarea: Task = {
+            id: idCounter,
+            title: title,
+            completed: false
+        };
+
+        await saveToDB(nuevaTarea);
+
+        tareas.push(nuevaTarea);
+        idCounter++;
+        console.log(`¡Tarea agregada al sistema!: ${title}`);
+        
+    } catch (error: any) {
+        console.log(`\n❌ Error: ${error.message}`);
+    }
 };
 
 
@@ -78,7 +99,6 @@ const filterCompleted = () => {
     return tareas.filter((task) => task.completed === true);
 };
 
-
 let menuActivo = true;
 
 while (menuActivo) {
@@ -96,7 +116,8 @@ while (menuActivo) {
 
     if (opcion === "1") {
         let title = await rl.question("Escribe el nombre de la nueva tarea: ");
-        addTask(title);
+        console.log("Guardando en base de datos, por favor espera...");
+        await addTask(title);
         
     } else if (opcion === "2") {
         console.log("\n--- Lista de Todas las Tareas ---");
